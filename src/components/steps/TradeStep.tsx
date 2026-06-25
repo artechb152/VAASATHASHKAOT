@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { asset, BASE } from '../../lib/utils'
 import type { Trade } from '../../types'
 import { useSim } from '../../state/SimContext'
-import NavBar from '../NavBar'
 
 export default function TradeStep() {
   const { almaSequence, setAlmaPointing, setMeters, setTrade, markDone, almaSay } = useSim()
@@ -11,11 +10,7 @@ export default function TradeStep() {
   useEffect(() => {
     setAlmaPointing(true)
     almaSequence([
-      {
-        html: 'שכחתי להגיד לך — <b>ניירות ערך</b> הם שם כללי למסמכים פיננסיים שאפשר לקנות ולמכור בשוק ההון. בתוך הקבוצה הזו יש מניות, אג״ח ועוד.',
-      },
-      { html: 'עכשיו יגיעו אליך שני לקוחות שיסבירו לך מה היא מניה ומה זה אג״ח.' },
-      { html: 'סומכת עליך שתדע לבחור מה מתאים יותר — ולעזרה, אני ממש פה לצידך!', kind: 'tip' },
+      { html: 'סומכת עליכם שתדעו לבחור מה מתאים יותר — ולעזרה, אני ממש פה לצידכם!', kind: 'tip' },
     ])
   }, [almaSequence, setAlmaPointing])
 
@@ -49,7 +44,6 @@ export default function TradeStep() {
   return (
     <>
       <div className="card">
-        <div className="kicker">שלב 4 · מניה מול אג״ח</div>
         <h2>שני לקוחות, שתי הצעות</h2>
         <p className="lead">
           הגיעו אליכם שני לקוחות. אחד מציע לכם לקנות <b>מניה</b>, השני מציע <b>אג״ח ממשלתי</b>. השקיעו ₪1,000
@@ -70,11 +64,11 @@ export default function TradeStep() {
                 ניכשל — אתם עלולים להפסיד."
               </div>
               <div className="metaline">
-                <span className="up">▲ סיכון גבוה יותר</span>
-                <span className="gr">▲ פוטנציאל רווח גבוה יותר</span>
+                <span className="up">סיכון גבוה יותר</span>
+                <span className="gr">פוטנציאל רווח גבוה יותר</span>
               </div>
-              <button className="btn btn-buy choose" disabled={!!chosen} onClick={() => choose('stock')}>
-                לקנות מניה · ₪1,000
+              <button className="btn btn-primary choose" disabled={!!chosen} onClick={() => choose('stock')}>
+                לרכוש מניה · ₪1,000
               </button>
             </div>
           </div>
@@ -92,10 +86,10 @@ export default function TradeStep() {
                 הסיכון בדרך כלל נמוך יותר, אבל גם פוטנציאל הרווח נמוך יותר."
               </div>
               <div className="metaline">
-                <span className="up">▴ סיכון נמוך יותר</span>
-                <span className="gr">▴ פוטנציאל רווח נמוך יותר</span>
+                <span className="up">סיכון נמוך יותר</span>
+                <span className="gr">פוטנציאל רווח נמוך יותר</span>
               </div>
-              <button className="btn btn-bronze choose" disabled={!!chosen} onClick={() => choose('bond')}>
+              <button className="btn btn-primary choose" disabled={!!chosen} onClick={() => choose('bond')}>
                 לרכוש אג״ח · ₪1,000
               </button>
             </div>
@@ -104,12 +98,10 @@ export default function TradeStep() {
 
         {chosen && (
           <button className="btn btn-ghost btn-sm" style={{ marginTop: 14 }} onClick={changeChoice}>
-            ↺ לשנות בחירה
+            לשנות בחירה
           </button>
         )}
       </div>
-
-      <NavBar lockContinue={!chosen} hint={chosen ? undefined : 'בחרו השקעה אחת כדי להמשיך'} />
     </>
   )
 }

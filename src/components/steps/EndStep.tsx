@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
 import { TERMS } from '../../data/content'
 import { profitLabel, riskLabel } from '../../lib/utils'
-import { IconSeal } from '../../lib/icons'
 import { useSim } from '../../state/SimContext'
 
 export default function EndStep() {
-  const { almaSequence, setAlmaPointing, markDone, risk, profit, goto } = useSim()
+  const { almaSequence, setAlmaPointing, markDone, risk, profit, setBackHandler } = useSim()
   const [answer, setAnswer] = useState('')
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    setBackHandler(submitted ? () => setSubmitted(false) : null)
+    return () => setBackHandler(null)
+  }, [submitted, setBackHandler])
 
   useEffect(() => {
     setAlmaPointing(false)
@@ -40,16 +44,10 @@ export default function EndStep() {
     const tail = trimmed.replace(/^ש/, '')
     return (
       <>
-        <div className="card">
+        <div className="card finale-card">
           <div className="finale">
-            <div className="seal">
-              <IconSeal />
-            </div>
-            <div className="kicker" style={{ justifyContent: 'center' }}>
-              הסימולציה הושלמה
-            </div>
             <h2>כל הכבוד, חבר/ת ועדה!</h2>
-            <p className="lead" style={{ margin: '8px auto 0' }}>
+            <p className="lead" style={{ margin: '12px auto 0' }}>
               עברתם את כל שלבי הוועדה — מהיכרות עם שוק ההון ועד בניית תיק השקעות אמיתי.
             </p>
           </div>
@@ -57,12 +55,11 @@ export default function EndStep() {
         </div>
 
         <div className="card">
-          <div className="kicker">סיכום המושגים</div>
-          <h3 style={{ fontSize: 22, marginBottom: 6 }}>כל מה שלמדתם, במקום אחד</h3>
-          <p style={{ color: 'var(--on-variant)', fontSize: 15, margin: '0 0 14px' }}>
+          <h3 style={{ fontSize: 26, marginBottom: 6 }}>כל מה שלמדתם, במקום אחד</h3>
+          <p style={{ color: 'var(--on-variant)', fontSize: 15.5, margin: '0 0 16px' }}>
             עשרת המושגים שמרכיבים את התמונה המלאה של שוק ההון.
           </p>
-          <div className="glossary">
+          <div className="glossary glossary-wide">
             {TERMS.map(([t, d]) => (
               <div className="gl" key={t}>
                 <b>{t}</b>
@@ -73,12 +70,8 @@ export default function EndStep() {
         </div>
 
         <div className="navbar">
-          <button className="btn btn-ghost btn-sm" onClick={() => goto(6)}>
-            ▸ חזרה
-          </button>
-          <div className="spacer" />
-          <button className="btn btn-primary" onClick={() => window.location.reload()}>
-            להתחיל מחדש ↻
+          <button className="btn btn-primary btn-sm" onClick={() => window.location.reload()}>
+            להתחיל מחדש
           </button>
         </div>
       </>
@@ -87,20 +80,19 @@ export default function EndStep() {
 
   return (
     <div className="card reflect">
-      <div className="kicker">שלב 8 · רפלקציה</div>
       <h2>מילה אחרונה לפני שמסכמים</h2>
       <div className="sentence-stem">"שוק ההון חשוב משום ש…"</div>
-      <p style={{ color: 'var(--on-variant)', fontSize: 15, margin: '0 0 12px' }}>
+      <p style={{ color: 'var(--on-surface)', fontSize: 17, lineHeight: 1.7, margin: '0 0 14px' }}>
         השלימו את המשפט במילים שלכם. אין נכון או לא נכון — זו ההזדמנות שלכם לנסח מה הבנתם.
       </p>
       <textarea value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="כתבו כאן…" />
       <button
-        className="btn btn-primary"
-        style={{ marginTop: 16 }}
+        className="btn btn-primary btn-sm"
+        style={{ marginTop: 16, display: 'table', marginInline: 'auto' }}
         disabled={answer.trim().length < 3}
         onClick={finish}
       >
-        לסיום ולצפייה בסיכום ◂
+        לסיום ולצפייה בסיכום
       </button>
     </div>
   )

@@ -15,19 +15,14 @@ export default function NavBar({
   lockContinue = false,
   onContinue,
 }: Props) {
-  const { step, back, next } = useSim()
+  const { next } = useSim()
   return (
     <div className="navbar">
-      {step > 0 && (
-        <button className="btn btn-ghost btn-sm" onClick={back}>
-          ▸ חזרה
-        </button>
-      )}
       <div className="spacer" />
       {hint && <span className="hint">{hint}</span>}
       {showContinue && (
         <button className="btn btn-primary" disabled={lockContinue} onClick={onContinue || next}>
-          {continueLabel} ◂
+          {continueLabel}
         </button>
       )}
     </div>

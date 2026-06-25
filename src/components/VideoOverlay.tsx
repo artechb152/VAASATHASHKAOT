@@ -2,58 +2,64 @@ import { useEffect, useRef, useState } from 'react'
 import { asset } from '../lib/utils'
 import type { VideoCfg } from '../data/content'
 
-export default function VideoOverlay({ cfg, onDone }: { cfg: VideoCfg; onDone: () => void }) {
+export default function VideoOverlay({
+  cfg,
+  onDone,
+  blocked = false,
+}: {
+  cfg: VideoCfg
+  onDone: () => void
+  blocked?: boolean
+}) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [revealed, setRevealed] = useState(false)
-  const [showSkip, setShowSkip] = useState(false)
-  const [showSound, setShowSound] = useState(true)
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     const v = videoRef.current
-    v?.play().catch(() => {})
     const onEnded = () => setRevealed(true)
     v?.addEventListener('ended', onEnded)
-    const t = window.setTimeout(() => setShowSkip(true), 5000)
     return () => {
       v?.removeEventListener('ended', onEnded)
-      window.clearTimeout(t)
+      try {
+        v?.pause()
+      } catch {
+        /* ignore */
+      }
       document.body.style.overflow = ''
     }
   }, [])
 
-  const reveal = () => {
-    setRevealed(true)
-    setShowSkip(false)
-  }
-  const enableSound = () => {
+  // Start playing (with sound) only once nothing blocks it (e.g. the protocol
+  // popup). The user already interacted, so sticky activation allows sound.
+  useEffect(() => {
     const v = videoRef.current
-    if (v) {
+    if (!v) return
+    if (blocked) {
+      try {
+        v.pause()
+      } catch {
+        /* ignore */
+      }
+    } else {
       v.muted = false
-      if (v.paused) v.play().catch(() => {})
+      v.play().catch(() => {})
     }
-    setShowSound(false)
-  }
+  }, [blocked])
 
   return (
     <div className="vfs">
-      <video ref={videoRef} className="vfs-video" controls autoPlay muted playsInline preload="auto">
+      <video ref={videoRef} className="vfs-video" controls playsInline preload="auto">
         <source src={cfg.src} type="video/mp4" />
         הדפדפן שלכם אינו תומך בהצגת וידאו.
       </video>
 
-      {showSound && (
-        <button className="vfs-sound" onClick={enableSound}>
-          הפעלת קול
-        </button>
-      )}
+      {/* Skip → advance to the next page immediately */}
+      <button className="vfs-skip show" onClick={onDone}>
+        דלג
+      </button>
 
-      {showSkip && !revealed && (
-        <button className="vfs-skip show" onClick={reveal}>
-          דלג ←
-        </button>
-      )}
-
+      {/* The coin (intro) / continue button appears when the video ends */}
       {cfg.coin ? (
         <div className={'vfs-action video-coin-wrap' + (revealed ? ' show' : '')}>
           <button className="video-coin" aria-label="לחצו על המטבע כדי להמשיך" onClick={onDone}>
@@ -64,7 +70,7 @@ export default function VideoOverlay({ cfg, onDone }: { cfg: VideoCfg; onDone: (
       ) : (
         <div className={'vfs-action vfs-cont-wrap' + (revealed ? ' show' : '')}>
           <button className="btn btn-primary btn-lg" onClick={onDone}>
-            המשך לשלב הבא ◂
+            המשך לשלב הבא
           </button>
         </div>
       )}

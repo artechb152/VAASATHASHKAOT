@@ -22,8 +22,8 @@ export interface VideoCfg {
 }
 export const STEP_VIDEO: Record<number, VideoCfg> = {
   0: { src: asset('media/1.mp4'), coin: true },
-  1: { src: asset('media/2.mp4'), coin: false },
-  2: { src: asset('media/3.mp4'), coin: false },
+  1: { src: asset('media/2.mp4'), coin: true },
+  2: { src: asset('media/3.mp4'), coin: true },
 }
 
 /* ---------- Stage 2: knowledge check ---------- */
@@ -83,13 +83,14 @@ export interface Part {
   role: string
   short: string
   icon: PartIconKey
+  img: string
 }
 export const PARTS: Part[] = [
-  { id: 'priv', name: 'משקיע פרטי', role: 'אני משקיע את החיסכון שלי כדי לנסות להרוויח תשואה.', short: 'משקיע את חסכונותיו כדי להרוויח תשואה', icon: 'person' },
-  { id: 'comp', name: 'חברה עסקית', role: 'אנחנו מגייסים כסף כדי להתפתח, להתרחב או לממן פעילות.', short: 'מגייסת כסף כדי להתפתח ולממן פעילות', icon: 'building' },
-  { id: 'gov', name: 'ממשלה', role: 'אנחנו מגייסים כסף מהציבור כדי לממן תקציב, פרויקטים ותשתיות.', short: 'מגייסת כסף לתקציב, פרויקטים ותשתיות', icon: 'gov' },
-  { id: 'bank', name: 'בנקים, ברוקרים ומוסדות פיננסיים', role: 'אנחנו מתווכים ומנהלים פעולות פיננסיות.', short: 'מתווך ומנהל פעולות פיננסיות', icon: 'bank' },
-  { id: 'inst', name: 'חברות ביטוח, קרנות נאמנות וקופות גמל', role: 'אנחנו משקיעים כספים של הציבור בשוק ההון.', short: 'משקיעים את כספי הציבור בשוק ההון', icon: 'shield' },
+  { id: 'priv', name: 'משקיע פרטי', role: 'אני משקיע את החיסכון שלי כדי לנסות להרוויח תשואה.', short: 'משקיע את חסכונותיו כדי להרוויח תשואה', icon: 'person', img: asset('media/priv.jpeg') },
+  { id: 'comp', name: 'חברה עסקית', role: 'אנחנו מגייסים כסף כדי להתפתח, להתרחב או לממן פעילות.', short: 'מגייסת כסף כדי להתפתח ולממן פעילות', icon: 'building', img: asset('media/comp.jpeg') },
+  { id: 'gov', name: 'ממשלה', role: 'אנחנו מגייסים כסף מהציבור כדי לממן תקציב, פרויקטים ותשתיות.', short: 'מגייסת כסף לתקציב, פרויקטים ותשתיות', icon: 'gov', img: asset('media/gov.jpeg') },
+  { id: 'bank', name: 'בנקים, ברוקרים ומוסדות פיננסיים', role: 'אנחנו מתווכים ומנהלים פעולות פיננסיות.', short: 'מתווך ומנהל פעולות פיננסיות', icon: 'bank', img: asset('media/bank.jpeg') },
+  { id: 'inst', name: 'חברות ביטוח, קרנות נאמנות וקופות גמל', role: 'אנחנו משקיעים כספים של הציבור בשוק ההון.', short: 'משקיעים את כספי הציבור בשוק ההון', icon: 'shield', img: asset('media/inst.jpeg') },
 ]
 
 /* ---------- Stage 5: how it connects ---------- */

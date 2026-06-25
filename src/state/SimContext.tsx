@@ -27,6 +27,16 @@ interface Sim {
   replay: number | null
   requestReplay: (s: number) => void
   clearReplay: () => void
+  protocolSeen: boolean
+  setProtocolSeen: () => void
+  quizGateSeen: boolean
+  setQuizGateSeen: () => void
+  tradeIntroSeen: boolean
+  setTradeIntroSeen: () => void
+  tradeFeedbackSeen: boolean
+  setTradeFeedbackSeen: () => void
+  tradeAltSeen: boolean
+  setTradeAltSeen: () => void
 
   decisions: Decisions
   setTrade: (t: Trade | null) => void
@@ -41,6 +51,11 @@ interface Sim {
 
   toast: string | null
   showToast: (m: string) => void
+
+  // When set by a multi-screen step, the global back button goes one inner
+  // screen back instead of to the previous step.
+  backHandler: (() => void) | null
+  setBackHandler: (fn: (() => void) | null) => void
 }
 
 const Ctx = createContext<Sim | null>(null)
@@ -54,10 +69,17 @@ export function SimProvider({ children }: { children: ReactNode }) {
   const [done, setDone] = useState<Record<number, boolean>>({})
   const [videoSeen, setVideoSeenState] = useState<Record<number, boolean>>({})
   const [replay, setReplay] = useState<number | null>(null)
+  const [protocolSeen, setProtocolSeenState] = useState(false)
+  const [quizGateSeen, setQuizGateSeenState] = useState(false)
+  const [tradeIntroSeen, setTradeIntroSeenState] = useState(false)
+  const [tradeFeedbackSeen, setTradeFeedbackSeenState] = useState(false)
+  const [tradeAltSeen, setTradeAltSeenState] = useState(false)
   const [decisions, setDecisions] = useState<Decisions>({ trade: null, portfolio: null })
   const [messages, setMessages] = useState<AlmaMsg[]>([])
   const [almaPointing, setAlmaPointing] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
+  const [backHandler, setBackHandlerState] = useState<(() => void) | null>(null)
+  const setBackHandler = useCallback((fn: (() => void) | null) => setBackHandlerState(() => fn), [])
 
   const stepRef = useRef(step)
   stepRef.current = step
@@ -66,7 +88,7 @@ export function SimProvider({ children }: { children: ReactNode }) {
 
   const goto = useCallback((i: number) => {
     setStep(Math.max(0, Math.min(STEPS.length - 1, i)))
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo(0, 0)
   }, [])
   const next = useCallback(() => goto(stepRef.current + 1), [goto])
   const back = useCallback(() => goto(stepRef.current - 1), [goto])
@@ -87,8 +109,19 @@ export function SimProvider({ children }: { children: ReactNode }) {
   const setVideoSeen = useCallback((s: number) => setVideoSeenState((v) => ({ ...v, [s]: true })), [])
   const requestReplay = useCallback((s: number) => setReplay(s), [])
   const clearReplay = useCallback(() => setReplay(null), [])
+  const setProtocolSeen = useCallback(() => setProtocolSeenState(true), [])
+  const setQuizGateSeen = useCallback(() => setQuizGateSeenState(true), [])
+  const setTradeIntroSeen = useCallback(() => setTradeIntroSeenState(true), [])
+  const setTradeFeedbackSeen = useCallback(() => setTradeFeedbackSeenState(true), [])
+  const setTradeAltSeen = useCallback(() => setTradeAltSeenState(true), [])
 
-  const setTrade = useCallback((t: Trade | null) => setDecisions((d) => ({ ...d, trade: t })), [])
+  const setTrade = useCallback((t: Trade | null) => {
+    setDecisions((d) => ({ ...d, trade: t }))
+    if (t != null) {
+      setTradeFeedbackSeenState(false)
+      setTradeAltSeenState(false)
+    }
+  }, [])
   const setPortfolio = useCallback((p: Record<string, number>) => setDecisions((d) => ({ ...d, portfolio: p })), [])
 
   const almaSay = useCallback((html: string, kind?: Kind) => setMessages((m) => [...m, { html, kind }]), [])
@@ -109,15 +142,22 @@ export function SimProvider({ children }: { children: ReactNode }) {
       risk, profit, flashTick, setMeters,
       done, markDone,
       videoSeen, setVideoSeen, replay, requestReplay, clearReplay,
+      protocolSeen, setProtocolSeen, quizGateSeen, setQuizGateSeen,
+      tradeIntroSeen, setTradeIntroSeen, tradeFeedbackSeen, setTradeFeedbackSeen,
+      tradeAltSeen, setTradeAltSeen,
       decisions, setTrade, setPortfolio,
       messages, almaSay, almaSequence, clearThread, almaPointing, setAlmaPointing,
       toast, showToast,
+      backHandler, setBackHandler,
     }),
     [
       started, start, step, goto, next, back, maxReached, risk, profit, flashTick, setMeters,
       done, markDone, videoSeen, setVideoSeen, replay, requestReplay, clearReplay,
+      protocolSeen, setProtocolSeen, quizGateSeen, setQuizGateSeen,
+      tradeIntroSeen, setTradeIntroSeen, tradeFeedbackSeen, setTradeFeedbackSeen,
+      tradeAltSeen, setTradeAltSeen,
       decisions, setTrade, setPortfolio, messages, almaSay, almaSequence, clearThread,
-      almaPointing, setAlmaPointing, toast, showToast,
+      almaPointing, setAlmaPointing, toast, showToast, backHandler, setBackHandler,
     ],
   )
 
